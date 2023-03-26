@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lan="en">
+    <head>
+        <title>Pokemon Dictionary</title>
+        <link src="./style.css">
+        <script src="./index.js"></script>
+    </head>
+    <body>
+        <h1>Pokemon Dictionary</h1>
+
+        <button id="toggle-mode">Night mode</button>
+
+        
+        <button id="champion-mode">Champion Mode</button>
+        
+        <!-- search the pokemon by name -->
+        <form id="search-pokemon">
+            <label for="search">Name of Pokemon :</label>
+            <input type="text" name="search" placeholder="pokemon">
+            <input type="submit" value="search">
+        </form>
+
+        <!-- type calculate form -->
+        <form id="type-calculater">
+            <label for="type1">Type Calculater </label>
+            <input type="text" name="type1" placeholder="Main Type">
+            <input type="text" name="type2" placeholder="Sub Type(If had)">
+            <input type="submit" name="submit-types" value="get Type Match-Up!">    
+        </form>
+
+        <!-- result of searching -->
+        <div id="result">
+            <div id="pokemon-name-result">
+                <ul id="pokemon">
+
+                </ul>
+            </div>
+            <div id="pokemon-type-result">
+                <ul id="from">
+
+                </ul>
+                <ul id="to">
+
+                </ul>
+            </div>            
+        </div>
+
+        <!-- move dictionary -->
+    </body>
+</html>
