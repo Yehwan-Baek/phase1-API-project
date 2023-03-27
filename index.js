@@ -4,7 +4,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const inputPokemon = document.querySelector("#inputPokemon")
     const inputType = document.querySelector("#inputType1")
-    const typeTo = document.querySelector("#to");
 
     formSearchPokemon.addEventListener("submit", (e) => {
         e.preventDefault();
@@ -24,44 +23,82 @@ document.addEventListener("DOMContentLoaded", () => {
 function searchPokemon (pokemonName) {
     let div = document.querySelector("#pokemon-name-result")
         div.innerHTML = " ";
+    let p = document.createElement("p");
+        p.innerHTML = " ";
+        div.appendChild(p)
 
     fetch(`https://pokeapi.co/api/v2/pokemon/${pokemonName}/`)
     .then( (res) => res.json() )
     .then( (data) => {
-        let ul = document.createElement("ul")
-        let name = document.createElement("li")
-        let id = document.createElement("li")
-        let type = document.createElement("li")
         let img1 = document.createElement("img")
-            img1.width = 250;
-            img1.height = 250;
+        img1.width = 250;
+        img1.height = 250;
         let img2 = document.createElement("img")
-            img2.width = 250;
-            img2.height = 250;
-        
-
-        name.innerHTML = "NAME : " + data.name;
-        id.innerHTML = "ID : " + data.id;
-        type.innerHTML = "Types : " + data.types.map(type => type.type.name).join(', ');
+        img2.width = 250;
+        img2.height = 250;
+       
         img1.src = "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/" + data.id + ".png";
         img2.src = "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/" + data.id + ".png";
+
+        //information of Pokemon on table
+        let table = document.createElement("table")
+        let trForName = document.createElement("tr")
+        let trForId = document.createElement("tr")
+        let trForType = document.createElement("tr")
+        let trForAbility = document.createElement("tr")
+   
+        table.appendChild(trForName)
+        table.appendChild(trForId)
+        table.appendChild(trForType)
+        table.appendChild(trForAbility)
+
+        let name = document.createElement("th")
+        let id = document.createElement("td")
+        let type = document.createElement("td")
+        let ability = document.createElement("td")
+
+        name.innerHTML = "NAME"
+        id.innerHTML = "ID"
+        type.innerHTML = "TYPE"
+        ability.innerHTML = "ABILITY"
+
+        let tdName = document.createElement("th")
+        let tdId = document.createElement("td")
+        let tdType = document.createElement("td")
+        let tdAbility = document.createElement("td")
+        
+        tdName.innerHTML = data.name.toUpperCase();
+        tdId.innerHTML = data.id;
+        tdType.innerHTML = data.types.map(type => type.type.name).join(', ');
+        tdAbility.innerHTML = data.abilities.map(ability => ability.ability.name).join(", ")
+        
+        trForName.appendChild(name)
+        trForName.appendChild(tdName)
+
+        trForId.appendChild(id)
+        trForId.appendChild(tdId)
+
+        trForType.appendChild(type)
+        trForType.appendChild(tdType)
+
+        trForAbility.appendChild(ability)
+        trForAbility.appendChild(tdAbility)
 
         div.appendChild(img1)
         div.appendChild(img2)
 
-        ul.appendChild(name)
-        ul.appendChild(id)
-        ul.appendChild(type)
+        div.appendChild(table) 
 
-        div.appendChild(ul)
         fetch(data.species.url)
         .then((res) => res.json())
         .then((species) => {
             fetch(species.evolution_chain.url)
             .then((res) => res.json())
             .then((data) => {
-                let evolLi = document.createElement("li")
-                evolLi.innerHTML = "Evolution Chain : ";
+                let trForEvolution = document.createElement("tr")
+                let evol = document.createElement("td")
+                evol.innerHTML = "EVOLUTION CHAIN"
+                let evolLi = document.createElement("td")
                 
                 let evolutionChain = [data.chain.species.name];
                 let nextEvolutions = data.chain.evolves_to;
@@ -82,24 +119,22 @@ function searchPokemon (pokemonName) {
                         searchPokemon(evolutionChain[i]);
                       });
                 }
-                ul.appendChild(evolLi)
-                
+                trForEvolution.appendChild(evol)
+                trForEvolution.appendChild(evolLi)
+                table.appendChild(trForEvolution)
             });
         });
     })
     .catch( (err) => {
         console.log(err)
-
-        let p = document.createElement("p");
-            p.innerHTML = "Sorry, I think this is not Pokemon. I can not find it.";
-
-        let div = document.querySelector("#result");
-            div.appendChild(p)
+        p.innerHTML = "Sorry, I think this is not Pokemon. I can not find it.";
     })
 }
 
 function searchType (inputType) {
+    const typeTo = document.querySelector("#to");
     const typeFrom = document.querySelector("#from");
+    typeTo.innerHTML = " ";
     typeFrom.innerHTML = " ";
 
     fetch(`https://pokeapi.co/api/v2/type/${inputType}/`)
@@ -148,26 +183,26 @@ function searchType (inputType) {
         }
 
         let doubleDamageTo =document.createElement("li");
-            doubleDamageTo.innerHTML = "Double Damage To : " + arrDoubleDamageTo.join(", ");
+        doubleDamageTo.innerHTML = "Double Damage To : " + arrDoubleDamageTo.join(", ");
         
         let halfDamageTo = document.createElement("li");
-            halfDamageTo.innerHTML = "Half Damamge To : " + arrHalfDamageTo.join(", ");
+        halfDamageTo.innerHTML = "Half Damamge To : " + arrHalfDamageTo.join(", ");
 
         let noDamageTo = document.createElement("li");
-            noDamageTo.innerHTML = "No Damage To : " + arrNoDamageTo.join(", ");
+        noDamageTo.innerHTML = "No Damage To : " + arrNoDamageTo.join(", ");
 
         let doubleDamageFrom = document.createElement("li");
-            doubleDamageFrom.innerHTML = "Double Damage From : " + arrDoubleDamageFrom.join(", ");
+        doubleDamageFrom.innerHTML = "Double Damage From : " + arrDoubleDamageFrom.join(", ");
         
         let halfDamageFrom = document.createElement("li");
-            halfDamageFrom.innerHTML = "Half Damage From : " + arrHalfDamageFrom.join(", ");
+        halfDamageFrom.innerHTML = "Half Damage From : " + arrHalfDamageFrom.join(", ");
 
         let noDamageFrom = document.createElement("li");
-            noDamageFrom.innerHTML = "No Damage From : " + arrNoDamageFrom.join(", ");
+        noDamageFrom.innerHTML = "No Damage From : " + arrNoDamageFrom.join(", ");
         
-        typeFrom.appendChild(doubleDamageTo)
-        typeFrom.appendChild(halfDamageTo)
-        typeFrom.appendChild(noDamageTo)
+        typeTo.appendChild(doubleDamageTo)
+        typeTo.appendChild(halfDamageTo)
+        typeTo.appendChild(noDamageTo)
 
         typeFrom.appendChild(doubleDamageFrom)
         typeFrom.appendChild(halfDamageFrom)
