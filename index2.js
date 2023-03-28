@@ -4,7 +4,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     formSearchPokemon.addEventListener("submit", (e) => {
         e.preventDefault();
-        const pokemonName = inputPokemon.value;
+        const pokemonName = inputPokemon.value.toLowerCase();
         loadComment(pokemonName)
     })
 })
