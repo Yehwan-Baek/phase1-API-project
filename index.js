@@ -7,11 +7,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
     formSearchPokemon.addEventListener("submit", (e) => {
         e.preventDefault();
-        const pokemonName = inputPokemon.value;
+        const pokemonName = inputPokemon.value.toLowerCase();
         searchPokemon(pokemonName);
     })
-
-    
 
     formSearchType.addEventListener("submit", (e) => {
         e.preventDefault();
@@ -23,9 +21,6 @@ document.addEventListener("DOMContentLoaded", () => {
 function searchPokemon (pokemonName) {
     let div = document.querySelector("#pokemon-name-result")
         div.innerHTML = " ";
-    let p = document.createElement("p");
-        p.innerHTML = " ";
-        div.appendChild(p)
 
     fetch(`https://pokeapi.co/api/v2/pokemon/${pokemonName}/`)
     .then( (res) => res.json() )
@@ -89,6 +84,82 @@ function searchPokemon (pokemonName) {
 
         div.appendChild(table) 
 
+        //stats of Pokemon table
+        let stats = data.stats;
+        let statsTable = document.createElement("table")
+        let tHead = document.createElement("thead")
+        let thRow = document.createElement("tr")
+        let thStatName = document.createElement("th")
+        let thStatValue = document.createElement("th")
+
+        thStatName.innerHTML = "STAT"        
+        thStatValue.innerHTML = "VALUE"
+
+        thRow.appendChild(thStatName)
+        thRow.appendChild(thStatValue)
+        tHead.appendChild(thRow)
+        statsTable.appendChild(tHead)
+
+        let tableBody = document.createElement("tbody");
+        stats.forEach(stat => {
+            let row = document.createElement("tr");
+            let statName = document.createElement("td")
+            let statValue = document.createElement("td");
+
+            statName.innerHTML = stat.stat.name;
+            statValue.innerHTML = stat.base_stat;
+
+            row.appendChild(statName);
+            row.appendChild(statValue);
+            tableBody.appendChild(row)
+        })
+        statsTable.appendChild(tableBody)
+        div.appendChild(statsTable)
+
+        //comment about pokemon
+        let commentForm = document.createElement("form")
+        let comment = document.createElement("input")
+        comment.setAttribute("type","text")
+        comment.style.height = "50px"
+        comment.style.width = "300px"
+        comment.setAttribute("placeholder",`give your comment about ${data.name}!`)
+        
+        let submitBtn = document.createElement("input")
+        submitBtn.setAttribute("type","submit")
+
+        commentForm.appendChild(comment)
+        commentForm.appendChild(submitBtn)
+
+        div.appendChild(commentForm)
+
+        commentForm.addEventListener("submit", (e) => {
+            e.preventDefault();
+            let txtComment = comment.value;
+
+            let commentData = {
+                name : data.name,
+                id_number : data.id,
+                commented : txtComment
+            }
+        
+            fetch("http://localhost:3000/comment", {
+                method : "POST",
+                headers: {
+                    "Accept" : "application/json",
+                    "Content-Type" : "application/json"
+                },
+                body : JSON.stringify(commentData)
+            })
+            .then( (res) => res.json() )
+            .then( (txt) => {
+                let par = document.createElement("p")
+                par.innerHTML = `Comment is updated successfully! - ${txt.commented}`;
+                div.appendChild(par,commentForm)
+            })
+
+        })
+
+        //evolution chains
         fetch(data.species.url)
         .then((res) => res.json())
         .then((species) => {
@@ -126,10 +197,18 @@ function searchPokemon (pokemonName) {
         });
     })
     .catch( (err) => {
+        let p = document.createElement("p");
+        p.innerHTML = " ";
+        div.appendChild(p)
+
         console.log(err)
         p.innerHTML = "Sorry, I think this is not Pokemon. I can not find it.";
     })
 }
+
+
+    
+
 
 function searchType (inputType) {
     const typeTo = document.querySelector("#to");
