@@ -5,6 +5,10 @@ document.addEventListener("DOMContentLoaded", () => {
     const inputPokemon = document.querySelector("#inputPokemon")
     const inputType = document.querySelector("#inputType1")
 
+    const toggleModeBtn = document.getElementById('toggle-mode');
+    const bodyEl = document.getElementById('body');
+    const imgEl = document.getElementById('img');
+
     formSearchPokemon.addEventListener("submit", (e) => {
         e.preventDefault();
         const pokemonName = inputPokemon.value.toLowerCase();
@@ -16,6 +20,21 @@ document.addEventListener("DOMContentLoaded", () => {
         const typeName = inputType.value;
         searchType(typeName)
     })
+
+    //toggle day to night, night to day
+    toggleModeBtn.addEventListener('click', function() {
+        if (bodyEl.classList.contains('day-mode')) {
+          bodyEl.classList.remove('day-mode');
+          bodyEl.classList.add('night-mode');
+          toggleModeBtn.textContent = 'Day mode';
+          imgEl.style.display = 'block';
+        } else {
+          bodyEl.classList.remove('night-mode');
+          bodyEl.classList.add('day-mode');
+          toggleModeBtn.textContent = 'Night mode';
+          imgEl.style.display = 'none';
+        }
+      });
 })
 
 function searchPokemon (pokemonName) {
@@ -113,51 +132,9 @@ function searchPokemon (pokemonName) {
             row.appendChild(statValue);
             tableBody.appendChild(row)
         })
+
         statsTable.appendChild(tableBody)
         div.appendChild(statsTable)
-
-        //comment about pokemon
-        let commentForm = document.createElement("form")
-        let comment = document.createElement("input")
-        comment.setAttribute("type","text")
-        comment.style.height = "50px"
-        comment.style.width = "300px"
-        comment.setAttribute("placeholder",`give your comment about ${data.name}!`)
-        
-        let submitBtn = document.createElement("input")
-        submitBtn.setAttribute("type","submit")
-
-        commentForm.appendChild(comment)
-        commentForm.appendChild(submitBtn)
-
-        div.appendChild(commentForm)
-
-        commentForm.addEventListener("submit", (e) => {
-            e.preventDefault();
-            let txtComment = comment.value;
-
-            let commentData = {
-                name : data.name,
-                id_number : data.id,
-                commented : txtComment
-            }
-        
-            fetch("http://localhost:3000/comment", {
-                method : "POST",
-                headers: {
-                    "Accept" : "application/json",
-                    "Content-Type" : "application/json"
-                },
-                body : JSON.stringify(commentData)
-            })
-            .then( (res) => res.json() )
-            .then( (txt) => {
-                let par = document.createElement("p")
-                par.innerHTML = `Comment is updated successfully! - ${txt.commented}`;
-                div.appendChild(par,commentForm)
-            })
-
-        })
 
         //evolution chains
         fetch(data.species.url)
@@ -195,6 +172,57 @@ function searchPokemon (pokemonName) {
                 table.appendChild(trForEvolution)
             });
         });
+
+        let allTable = document.querySelectorAll("table")
+            for(let i=0; i<allTable.length; i++) {
+                allTable[i].style.margin = "0 auto";
+                allTable[i].style.tableLayout = "fixed";
+                allTable[i].style.width = "50%";
+            }
+
+        //comment about pokemon
+        let commentForm = document.createElement("form")
+        let comment = document.createElement("input")
+        comment.setAttribute("type","text")
+        comment.style.height = "50px"
+        comment.style.width = "300px"
+        comment.setAttribute("placeholder",`give your comment about ${data.name}!`)
+        
+        let submitBtn = document.createElement("input")
+        submitBtn.setAttribute("type","submit")
+
+        commentForm.appendChild(comment)
+        commentForm.appendChild(submitBtn)
+
+        div.appendChild(commentForm)
+
+        commentForm.addEventListener("submit", (e) => {
+            let divComment = document.querySelector("#comment")
+            e.preventDefault();
+            let txtComment = comment.value;
+
+            let commentData = {
+                name : data.name,
+                id_number : data.id,
+                commented : txtComment
+            }
+        
+            fetch("http://localhost:3000/comment", {
+                method : "POST",
+                headers: {
+                    "Accept" : "application/json",
+                    "Content-Type" : "application/json"
+                },
+                body : JSON.stringify(commentData)
+            })
+            .then( (res) => res.json() )
+            .then( (txt) => {
+                let par = document.createElement("p")
+                par.innerHTML = `Comment is updated successfully! - ${txt.commented}`;
+                divComment.appendChild(par,commentForm)
+            })
+
+        })
     })
     .catch( (err) => {
         let p = document.createElement("p");
@@ -206,86 +234,73 @@ function searchPokemon (pokemonName) {
     })
 }
 
+function searchType(inputType) {
+    const div = document.querySelector("#pokemon-type-result")
+    div.innerHTML = "";
 
+    const typeTable = document.createElement('table');
+    const damageRelationHeaders = ['Double Damage To', 'Half Damage To', 'No Damage To', 'Double Damage From', 'Half Damage From', 'No Damage From'];
+    const damageRelationKeys = ['double_damage_to', 'half_damage_to', 'no_damage_to', 'double_damage_from', 'half_damage_from', 'no_damage_from'];
     
+    const typeTh = document.createElement('thead');
+    const typeTo = document.createElement('tbody');
+    const typeFrom = document.createElement('tbody');
 
-
-function searchType (inputType) {
-    const typeTo = document.querySelector("#to");
-    const typeFrom = document.querySelector("#from");
-    typeTo.innerHTML = " ";
-    typeFrom.innerHTML = " ";
-
+    const th1 = document.createElement("th");
+    const th2 = document.createElement("th");
+    th1.innerHTML = "Damage Relations";
+    th2.innerHTML = "Types";
+    typeTh.appendChild(th1)
+    typeTh.appendChild(th2)
+    
     fetch(`https://pokeapi.co/api/v2/type/${inputType}/`)
-    .then( (res) => res.json() )
-    .then( (data) => {
-        let arrDoubleDamageTo = [];
-        let pathDoubleDamageTO = data.damage_relations.double_damage_to;
-        
-        let arrHalfDamageTo = [];
-        let pathHalfDamageTo = data.damage_relations.half_damage_to;
-
-        let arrNoDamageTo = [];
-        let pathNoDamageTo = data.damage_relations.no_damage_to;
-
-        let arrDoubleDamageFrom = [];
-        let pathDoubleDamageFrom = data.damage_relations.double_damage_from;
-
-        let arrHalfDamageFrom = [];
-        let pathHalfDamageFrom = data.damage_relations.half_damage_from;
-
-        let arrNoDamageFrom = [];
-        let pathNoDamageFrom = data.damage_relations.no_damage_from;
-
-        for (let i = 0; i < pathDoubleDamageTO.length; i++) {
-            arrDoubleDamageTo.push(pathDoubleDamageTO[i].name)
+      .then((res) => res.json())
+      .then((data) => {
+        const { double_damage_to, half_damage_to, no_damage_to, double_damage_from, half_damage_from, no_damage_from } = data.damage_relations;
+  
+        for (let i = 0; i < damageRelationHeaders.length; i++) {
+          const header = document.createElement('th');
+          header.textContent = damageRelationHeaders[i];
+  
+          const damageRelation = document.createElement('td');
+          damageRelation.textContent = dataToText(eval(damageRelationKeys[i]));
+  
+          const row = document.createElement('tr');
+          row.appendChild(header);
+          row.appendChild(damageRelation);
+  
+          if (i < 3) {
+            typeTo.appendChild(row);
+          } else {
+            typeFrom.appendChild(row);
+          }
         }
+        typeTable.appendChild(typeTh);
+        typeTable.appendChild(typeTo);
+        typeTable.appendChild(typeFrom);
+  
+        typeTable.style.margin = "0 auto";
+        typeTable.style.tableLayout = "fixed";
+        typeTable.style.width = "50%";
 
-        for (let i = 0; i < pathHalfDamageTo.length; i++) {
-            arrHalfDamageTo.push(pathHalfDamageTo[i].name)
-        }
+        div.appendChild(typeTable);
+      })
+      .catch( (err) => {
+        let p = document.createElement("p");
+        p.innerHTML = " ";
+        div.appendChild(p)
 
-        for (let i = 0; i < pathNoDamageTo.length; i++) {
-            arrNoDamageTo.push(pathNoDamageTo[i].name)
-        }
-
-        for (let i = 0; i < pathDoubleDamageFrom.length; i++) {
-            arrDoubleDamageFrom.push(pathDoubleDamageFrom[i].name)
-        }
-        
-        for (let i = 0; i < pathHalfDamageFrom.length; i++) {
-            arrHalfDamageFrom.push(pathHalfDamageFrom[i].name)
-        }
-
-        for (let i = 0; i < pathNoDamageFrom.lenth; i++) {
-            arrNoDamageFrom.push(pathNoDamageFrom[i].name)
-        }
-
-        let doubleDamageTo =document.createElement("li");
-        doubleDamageTo.innerHTML = "Double Damage To : " + arrDoubleDamageTo.join(", ");
-        
-        let halfDamageTo = document.createElement("li");
-        halfDamageTo.innerHTML = "Half Damamge To : " + arrHalfDamageTo.join(", ");
-
-        let noDamageTo = document.createElement("li");
-        noDamageTo.innerHTML = "No Damage To : " + arrNoDamageTo.join(", ");
-
-        let doubleDamageFrom = document.createElement("li");
-        doubleDamageFrom.innerHTML = "Double Damage From : " + arrDoubleDamageFrom.join(", ");
-        
-        let halfDamageFrom = document.createElement("li");
-        halfDamageFrom.innerHTML = "Half Damage From : " + arrHalfDamageFrom.join(", ");
-
-        let noDamageFrom = document.createElement("li");
-        noDamageFrom.innerHTML = "No Damage From : " + arrNoDamageFrom.join(", ");
-        
-        typeTo.appendChild(doubleDamageTo)
-        typeTo.appendChild(halfDamageTo)
-        typeTo.appendChild(noDamageTo)
-
-        typeFrom.appendChild(doubleDamageFrom)
-        typeFrom.appendChild(halfDamageFrom)
-        typeFrom.appendChild(noDamageFrom)
+        console.log(err)
+        p.innerHTML = "Sorry, I think this is not Name of Type. I can not find it.";
     })
-}
-
+  }
+  
+  function dataToText(damageRelationData) {
+    if (damageRelationData.length === 0) {
+      return 'None';
+    }
+  
+    const types = damageRelationData.map(type => type.name).join(', ');
+  
+    return types;
+  }
