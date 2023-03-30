@@ -20,6 +20,7 @@ function loadComment(pokemonName) {
         for (let i = 0; i < comment.length; i++) {
           if (comment[i].name === pokemonName || comment[i].id_number === parseInt(pokemonName)) {
             let coLi = document.createElement("li");
+            coLi.style.listStyle = "none";
             coLi.innerHTML = comment[i].commented;
             coUl.appendChild(coLi);
           }
