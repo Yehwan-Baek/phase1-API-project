@@ -14,6 +14,13 @@ table, th, tr, td {
 }
 
 .night-mode {
+    background-image: url("https://wallpapers.com/images/hd/gengar-wicked-grin-15wvx6l3mapvq4pf.jpg");
+    background-size: 25%;
+    background-repeat: no-repeat;
     background-color: black;
     color: white;
+}
+
+.hover:hover {
+    color: red;
 }
