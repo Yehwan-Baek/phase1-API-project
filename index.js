@@ -53,8 +53,8 @@ function searchPokemon (pokemonName) {
       img2.width = 250;
       img2.height = 250;
      
-      img1.src = "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/" + data.id + ".png";
-      img2.src = "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/" + data.id + ".png";
+      img1.src = data.sprites.front_default;
+      img2.src = data.sprites.front_shiny;
 
       //information of Pokemon on table
       let table = document.createElement("table")
@@ -223,16 +223,21 @@ function searchPokemon (pokemonName) {
           })
           .then( (res) => res.json() )
           .then( () => {
-            const prevPar = document.querySelector("#comment p");
-            if (prevPar) {
-              divComment.removeChild(prevPar);
-            }
+          const prevPar = document.querySelector("#comment p");
+          if (prevPar) {
+            divComment.removeChild(prevPar);
+          }
 
-              let par = document.createElement("p")
-              par.innerHTML = ""
-              par.innerHTML = 'Comment is updated successfully!';
-              divComment.appendChild(par,commentForm)
-
+          let par = document.createElement("p")
+          par.innerHTML = ""
+          par.innerHTML = 'Comment is updated successfully!';
+          divComment.appendChild(par,commentForm)
+              
+          let newComment = document.createElement("li")
+          let commentUl = document.querySelector("#commentlist")
+          newComment.innerHTML = txtComment;
+          newComment.style.listStyleType = "decimal";
+          commentUl.appendChild(newComment)
           })
           comment.value = ""
       })

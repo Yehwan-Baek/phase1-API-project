@@ -15,11 +15,6 @@ document.addEventListener("DOMContentLoaded", () => {
       let div = document.querySelector("#comment");
       div.innerHTML = "";
     })
-
-    commentForm.addEventListener("submit", (e) => {
-      e.preventDefault();
-      loadComment(pokemonName)
-    })
 })
 
 function loadComment(pokemonName) {
@@ -30,6 +25,7 @@ function loadComment(pokemonName) {
       .then((res) => res.json())
       .then((comment) => {
         let coUl = document.createElement("ul");
+        coUl.setAttribute("id", "commentlist")
         for (let i = 0; i < comment.length; i++) {
           if (comment[i].name === pokemonName || comment[i].id_number === parseInt(pokemonName)) {
             let coLi = document.createElement("li");
